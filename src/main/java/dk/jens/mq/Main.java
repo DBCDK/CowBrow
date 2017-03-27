@@ -10,7 +10,8 @@ public class Main {
 
         CowBrow cowBrow = new CowBrow();
         Session session = cowBrow.connect(parsedArgs.getString("host"),
-            parsedArgs.getString("port"));
+            parsedArgs.getString("port"), parsedArgs.getString("user"),
+            parsedArgs.getString("password"));
         List<String> actions = parsedArgs.getList("action");
         if(actions.get(0).equals("cli")) {
             Cli cli = new Cli(cowBrow);

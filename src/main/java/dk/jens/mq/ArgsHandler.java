@@ -72,6 +72,8 @@ public class ArgsHandler {
             .nargs(2)
             .action(new AppendArgumentAction())
             .setDefault(new ArrayList<String>());
+        parser.addArgument("--user").setDefault("admin");
+        parser.addArgument("--password").setDefault("admin");
         Namespace ns = null;
         try {
             ns = parser.parseArgs(args);

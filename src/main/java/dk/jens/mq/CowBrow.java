@@ -38,7 +38,8 @@ public class CowBrow
 
     private Connection connection;
 
-    public Session connect(String host, String port) {
+    public Session connect(String host, String port, String user,
+            String password) {
         try {
             ConnectionFactory cf = new ConnectionFactory();
             // uden CONNECTIONTYPE_ADMIN får man autorisations-fejl
@@ -46,7 +47,7 @@ public class CowBrow
             cf.setProperty(ConnectionConfiguration.imqBrokerHostName, host);
             cf.setProperty(ConnectionConfiguration.imqBrokerHostPort, port);
             //cf.setProperty(ConnectionConfiguration.imqConnectionType, "SSL");
-            connection = cf.createConnection("admin", "admin");
+            connection = cf.createConnection(user, password);
             connection.start();
             return connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         } catch(JMSException e) {
