@@ -65,7 +65,7 @@ public class ArgsHandler {
         ArgumentParser parser = ArgumentParsers.newArgumentParser("CowBrow");
         parser.addArgument("action").nargs("+").help(String.format(
             "%s - [cli to start cli interface]", availableActions));
-        parser.addArgument("-H", "--host").setDefault("dataio-be-s02");
+        parser.addArgument("-H", "--host").setDefault("");
         parser.addArgument("-p", "--port").setDefault("7676");
         parser.addArgument("-q", "--queuename");
         parser.addArgument("--prop")
