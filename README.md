@@ -12,7 +12,8 @@ CowBrow has both a single command interface and a session interface. The same ac
 
 ```java -jar cowbrow.jar -h``` for further help  
 
-###examples:
+examples:
+---------
 ```
 java -jar cowbrow.jar list -H myhost
 # output:
