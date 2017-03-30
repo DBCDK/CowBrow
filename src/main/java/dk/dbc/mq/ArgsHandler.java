@@ -1,4 +1,4 @@
-package dk.jens.mq;
+package dk.dbc.mq;
 
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.impl.action.AppendArgumentAction;

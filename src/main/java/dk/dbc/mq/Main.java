@@ -1,4 +1,4 @@
-package dk.jens.mq;
+package dk.dbc.mq;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

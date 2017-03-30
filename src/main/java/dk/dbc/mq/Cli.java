@@ -1,4 +1,4 @@
-package dk.jens.mq;
+package dk.dbc.mq;
 
 import javax.jms.Session;
 import java.util.NoSuchElementException;

@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>dk.jens.mq</groupId>
+    <groupId>dk.dbc.mq</groupId>
     <artifactId>CowBrow</artifactId>
     <packaging>jar</packaging>
     <version>0.1.0</version>
@@ -59,7 +59,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>dk.jens.mq.Main</mainClass>
+                            <mainClass>dk.dbc.mq.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

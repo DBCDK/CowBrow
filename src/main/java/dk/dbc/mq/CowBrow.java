@@ -1,4 +1,4 @@
-package dk.jens.mq;
+package dk.dbc.mq;
 
 import com.sun.messaging.ConnectionFactory;
 import com.sun.messaging.ConnectionConfiguration;
