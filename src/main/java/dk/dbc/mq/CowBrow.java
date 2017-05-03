@@ -5,6 +5,9 @@ import com.sun.messaging.ConnectionConfiguration;
 import com.sun.messaging.jmq.ClientConstants;
 import com.sun.messaging.jmq.util.DestType;
 import com.sun.messaging.jmq.util.admin.DestinationInfo;
+import dk.dbc.mq.json.JsonHandler;
+import dk.dbc.mq.json.MessageJSON;
+import dk.dbc.mq.json.ResultJSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +23,6 @@ import javax.jms.Session;
 import javax.jms.TemporaryQueue;
 import javax.jms.TextMessage;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -182,35 +183,60 @@ public class CowBrow
         }
     }
 
-    private String messageToString(Message message) throws JMSException {
-        String body, type;
-        body = type = "";
+    private MessageJSON messageToJson(Message message) throws JMSException {
+        String payload = null;
+        String type = null;
         if(message instanceof TextMessage) {
-            body = ((TextMessage) message).getText();
-            type = "TextMessage";
+            payload = ((TextMessage) message).getText();
+            type = MessageJSON.TYPE_TEXTMESSAGE;
         } else if(message instanceof ObjectMessage) {
-            body = ((ObjectMessage) message).getObject().toString();
-            type = "ObjectMessage";
+            payload = ((ObjectMessage) message).getObject().toString();
+            type = MessageJSON.TYPE_OBJECTMESSAGE;
         }
-        Date date = new Date(message.getJMSTimestamp());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss");
-        String dateFormated = sdf.format(date);
-        return String.format("%s\t%s\t%s\n", dateFormated, type, body);
+
+        MessageJSON.MessageHeaders headers = new MessageJSON.MessageHeaders();
+        headers.JMSCorrelationID = message.getJMSCorrelationID();
+        headers.JMSDeliveryMode = message.getJMSDeliveryMode();
+        headers.JMSMessageID = message.getJMSMessageID();
+        headers.JMSPriority = message.getJMSType();
+        headers.JMSTimestamp = message.getJMSTimestamp();
+        headers.JMSType = message.getJMSType();
+
+        MessageJSON<String> jsonObject = new MessageJSON<>();
+        jsonObject.withPayload(payload)
+            .withHeaders(headers)
+            .withType(type);
+
+        Enumeration enumeration = message.getPropertyNames();
+        while(enumeration.hasMoreElements()) {
+            String name = (String) enumeration.nextElement();
+            Object value = message.getObjectProperty(name);
+
+            MessageJSON.Property property = new MessageJSON.Property();
+            property.key = name;
+            property.value = value;
+            jsonObject.addProperty(property);
+        }
+
+        return jsonObject;
     }
 
     public void listMessages(Session session, String queueName) {
         try {
             Queue queue = session.createQueue(queueName);
             QueueBrowser browser = session.createBrowser(queue);
+
+            ResultJSON<MessageJSON> result = new ResultJSON<>();
+            result.withResponseType(ResultJSON.TYPE_MESSAGE)
+                .withResponseCode(200);
+
             Enumeration messages = browser.getEnumeration();
-            StringBuilder sb = new StringBuilder();
             while(messages.hasMoreElements()) {
                 Message message = (Message) messages.nextElement();
-                String out = messageToString(message);
-                sb.append(out);
+                MessageJSON response = messageToJson(message);
+                result.addResponse(response);
             }
-            System.out.println("Timestamp\tType\tBody\n");
-            System.out.println(sb.toString());
+            System.out.println(JsonHandler.toJson(result));
         } catch(JMSException e) {
             LOGGER.error("error listing messages {}", e.toString());
         }
