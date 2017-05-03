@@ -8,8 +8,8 @@ public class ResultJSON<T> {
     public String responseType;
     public List<T> responses;
 
-    public static String TYPE_MESSAGE = "message";
-    public static String TYPE_QUEUE = "queue";
+    public static String TYPE_MESSAGES = "messages";
+    public static String TYPE_DESTINATIONS = "destinations";
 
     public ResultJSON() {
         responses = new ArrayList<>();

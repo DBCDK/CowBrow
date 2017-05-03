@@ -5,6 +5,7 @@ import com.sun.messaging.ConnectionConfiguration;
 import com.sun.messaging.jmq.ClientConstants;
 import com.sun.messaging.jmq.util.DestType;
 import com.sun.messaging.jmq.util.admin.DestinationInfo;
+import dk.dbc.mq.json.DestinationJSON;
 import dk.dbc.mq.json.JsonHandler;
 import dk.dbc.mq.json.MessageJSON;
 import dk.dbc.mq.json.ResultJSON;
@@ -137,10 +138,13 @@ public class CowBrow
 
     public void listQueues(Session session) {
         try {
+            ResultJSON<DestinationJSON> result = new ResultJSON<>();
             ObjectMessage receivedMessage = (ObjectMessage) sendBrokerCmd(
                 session, GET_DESTINATIONS);
             if(!checkMessageStatus(receivedMessage))
                 return;
+            result.withResponseCode(200)
+                .withResponseType(ResultJSON.TYPE_DESTINATIONS);
             Vector destinations = (Vector) receivedMessage.getObject();
             Enumeration elements = destinations.elements();
             while (elements.hasMoreElements()) {
@@ -149,8 +153,18 @@ public class CowBrow
                         DestType.isInternal(info.fulltype) ||
                         DestType.isTemporary(info.type))
                     continue;
-                System.out.println(info);
+                DestinationJSON jsonObject = new DestinationJSON();
+                jsonObject.consumers = info.nConsumers;
+                jsonObject.maxMessages = info.maxMessages;
+                jsonObject.maxMessageBytes = info.maxMessageBytes;
+                jsonObject.name = info.name;
+                jsonObject.type = DestType.toString(info.type);
+                jsonObject.numMessages = info.nMessages;
+                jsonObject.numMessageBytes = info.nMessageBytes;
+                jsonObject.producers = info.nProducers;
+                result.addResponse(jsonObject);
             }
+            System.out.println(JsonHandler.toJson(result));
         }
         catch(JMSException e) {
             LOGGER.error("error getting queue list: {}", e.toString());
@@ -227,7 +241,7 @@ public class CowBrow
             QueueBrowser browser = session.createBrowser(queue);
 
             ResultJSON<MessageJSON> result = new ResultJSON<>();
-            result.withResponseType(ResultJSON.TYPE_MESSAGE)
+            result.withResponseType(ResultJSON.TYPE_MESSAGES)
                 .withResponseCode(200);
 
             Enumeration messages = browser.getEnumeration();
