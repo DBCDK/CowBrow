@@ -10,6 +10,7 @@ public class ResultJSON<T> {
 
     public static String TYPE_MESSAGES = "messages";
     public static String TYPE_DESTINATIONS = "destinations";
+    public static String TYPE_ERROR = "error";
 
     public ResultJSON() {
         responses = new ArrayList<>();
@@ -32,6 +33,7 @@ public class ResultJSON<T> {
     public static String writeErrorJson(int statusCode, String errorMsg) {
         // hand-written json since the error could be that machine json writing failed
         return "{\"statusCode\": " + statusCode +
-            ", \"responseType\": \"error\", \"response\": \"" + errorMsg + "\"}";
+            ", \"responseType\": \"" + TYPE_ERROR + "\", \"response\": \""
+            + errorMsg + "\"}";
     }
 }
