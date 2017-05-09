@@ -55,6 +55,9 @@ public class CowBrow
         } catch(JMSException e) {
             LOGGER.error("error connecting to host {} port {}: {}", host,
                 port, e.toString());
+            System.out.println(ResultJSON.writeErrorJson(500,
+                String.format("error connecting to host %s port %s: %s", host,
+                port, e.toString())));
         }
         return null;
     }
@@ -65,6 +68,8 @@ public class CowBrow
                 connection.close();
         } catch(JMSException e) {
             LOGGER.error("error trying to disconnect: {}", e.toString());
+            System.out.println(ResultJSON.writeErrorJson(500,
+                String.format("error trying to disconnect: %s", e.toString())));
         }
     }
 
@@ -100,6 +105,8 @@ public class CowBrow
             sendMessageTo(session, queueName, message, properties, null);
         } catch(JMSException e) {
             LOGGER.error("error sending textmessage: {}", e.toString());
+            System.out.println(ResultJSON.writeErrorJson(500,
+                String.format("error sending textmessage: %s", e.toString())));
         }
     }
 
@@ -168,6 +175,8 @@ public class CowBrow
         }
         catch(JMSException e) {
             LOGGER.error("error getting queue list: {}", e.toString());
+            System.out.println(ResultJSON.writeErrorJson(500,
+                String.format("error getting queue list: %s", e.toString())));
         }
     }
 
@@ -180,6 +189,8 @@ public class CowBrow
             checkMessageStatus(receivedMessage);
         } catch (JMSException e) {
             LOGGER.error("error creating queue {}: {}", name, e.toString());
+            System.out.println(ResultJSON.writeErrorJson(500,
+                String.format("error creating queue %s: %s", name, e.toString())));
         }
     }
 
@@ -194,6 +205,8 @@ public class CowBrow
             checkMessageStatus(receivedMessage);
         } catch(JMSException e){
             LOGGER.error("error destroying queue {}: {}", name, e.toString());
+            System.out.println(ResultJSON.writeErrorJson(500,
+                String.format("error destroying queue %s: %s", name, e.toString())));
         }
     }
 
@@ -253,6 +266,8 @@ public class CowBrow
             System.out.println(JsonHandler.toJson(result));
         } catch(JMSException e) {
             LOGGER.error("error listing messages {}", e.toString());
+            System.out.println(ResultJSON.writeErrorJson(500,
+                String.format("error listing messages %s", e.toString())));
         }
     }
 
