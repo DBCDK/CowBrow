@@ -9,6 +9,7 @@ import dk.dbc.mq.json.DestinationJSON;
 import dk.dbc.mq.json.JsonHandler;
 import dk.dbc.mq.json.MessageJSON;
 import dk.dbc.mq.json.ResultJSON;
+import dk.dbc.mq.json.StatusJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,14 +63,19 @@ public class CowBrow
         return null;
     }
 
-    public void disconnect() {
+    public String disconnect() {
         try {
             if(connection != null)
                 connection.close();
+            ResultJSON<StatusJson> result = new ResultJSON<>();
+            result.withResponseCode(200)
+                .withResponseType(ResultJSON.TYPE_STATUS);
+            result.addResponse(StatusJson.genericOk());
+            return JsonHandler.toJson(result);
         } catch(JMSException e) {
             LOGGER.error("error trying to disconnect: {}", e.toString());
-            System.out.println(ResultJSON.writeErrorJson(500,
-                String.format("error trying to disconnect: %s", e.toString())));
+            return ResultJSON.writeErrorJson(500,
+                String.format("error trying to disconnect: %s", e.toString()));
         }
     }
 
@@ -98,15 +104,15 @@ public class CowBrow
         return sendMessageForReply(session, queueName, msg, properties);
     }
 
-    public void sendTextMessageTo(Session session, String queueName,
+    public String sendTextMessageTo(Session session, String queueName,
             String body, CmdProperty[] properties) {
         try {
             TextMessage message = session.createTextMessage(body);
-            sendMessageTo(session, queueName, message, properties, null);
+            return sendMessageTo(session, queueName, message, properties, null);
         } catch(JMSException e) {
             LOGGER.error("error sending textmessage: {}", e.toString());
-            System.out.println(ResultJSON.writeErrorJson(500,
-                String.format("error sending textmessage: %s", e.toString())));
+            return ResultJSON.writeErrorJson(500,
+                String.format("error sending textmessage: %s", e.toString()));
         }
     }
 
@@ -120,7 +126,7 @@ public class CowBrow
         return receivedMessage;
     }
 
-    private void sendMessageTo(Session session, String queueName,
+    private String sendMessageTo(Session session, String queueName,
             Message msg, CmdProperty[] properties, TemporaryQueue replyQueue)
             throws JMSException {
         Queue requestQueue = session.createQueue(queueName);
@@ -128,28 +134,40 @@ public class CowBrow
             msg.setJMSReplyTo(replyQueue);
         for(CmdProperty prop : properties) {
             Object value = prop.getValue();
-            if(value instanceof Integer)
+            if(value instanceof Integer) {
                 msg.setIntProperty(prop.getKey(), (Integer) value);
-            else if(value instanceof Double)
+            } else if(value instanceof Double) {
                 msg.setDoubleProperty(prop.getKey(), (Double) value);
-            else if(value instanceof Float)
+            } else if(value instanceof Float) {
                 msg.setFloatProperty(prop.getKey(), (Float) value);
-            else if(value instanceof String)
+            } else if(value instanceof String) {
                 msg.setStringProperty(prop.getKey(), (String) value);
-            else
+            } else {
                 LOGGER.warn("property value not understood: {}", prop.getKey());
+                ResultJSON<StatusJson> result = new ResultJSON<>();
+                result.withResponseCode(500)
+                    .withResponseType(ResultJSON.TYPE_STATUS);
+                result.addResponse(new StatusJson().withMessage(String.format(
+                    "property value not understood: %s", prop.getKey())));
+                return JsonHandler.toJson(result);
+            }
         }
         MessageProducer producer = session.createProducer(requestQueue);
         producer.send(msg);
+        ResultJSON<StatusJson> result = new ResultJSON<>();
+        result.withResponseCode(200)
+            .withResponseType(ResultJSON.TYPE_STATUS);
+        result.addResponse(StatusJson.genericOk());
+        return JsonHandler.toJson(result);
     }
 
-    public void listQueues(Session session) {
+    public String listQueues(Session session) {
         try {
             ResultJSON<DestinationJSON> result = new ResultJSON<>();
             ObjectMessage receivedMessage = (ObjectMessage) sendBrokerCmd(
                 session, GET_DESTINATIONS);
-            if(!checkMessageStatus(receivedMessage))
-                return;
+            if(receivedMessage.getIntProperty("JMQStatus") != 200)
+                return JsonHandler.toJson(checkMessageStatus(receivedMessage));
             result.withResponseCode(200)
                 .withResponseType(ResultJSON.TYPE_DESTINATIONS);
             Vector destinations = (Vector) receivedMessage.getObject();
@@ -171,30 +189,30 @@ public class CowBrow
                 jsonObject.producers = info.nProducers;
                 result.addResponse(jsonObject);
             }
-            System.out.println(JsonHandler.toJson(result));
+            return JsonHandler.toJson(result);
         }
         catch(JMSException e) {
             LOGGER.error("error getting queue list: {}", e.toString());
-            System.out.println(ResultJSON.writeErrorJson(500,
-                String.format("error getting queue list: %s", e.toString())));
+            return ResultJSON.writeErrorJson(500,
+                String.format("error getting queue list: %s", e.toString()));
         }
     }
 
-    public void createQueue(Session session, String name) {
+    public String createQueue(Session session, String name) {
         try {
             DestinationInfo dest = new DestinationInfo();
             dest.setName(name);
             Message receivedMessage = sendBrokerCmd(session,
                 CREATE_DESTINATION, dest);
-            checkMessageStatus(receivedMessage);
+            return JsonHandler.toJson(checkMessageStatus(receivedMessage));
         } catch (JMSException e) {
             LOGGER.error("error creating queue {}: {}", name, e.toString());
-            System.out.println(ResultJSON.writeErrorJson(500,
-                String.format("error creating queue %s: %s", name, e.toString())));
+            return ResultJSON.writeErrorJson(500,
+                String.format("error creating queue %s: %s", name, e.toString()));
         }
     }
 
-    public void destroyQueue(Session session, String name) {
+    public String destroyQueue(Session session, String name) {
         try {
             CmdProperty[] properties = {
                 new CmdProperty(JMQMESSAGETYPE, DESTROY_DESTINATION),
@@ -202,11 +220,11 @@ public class CowBrow
                 new CmdProperty("JMQDestType", DestType.DEST_TYPE_QUEUE),
             };
             Message receivedMessage = sendBrokerCmd(session, null, properties);
-            checkMessageStatus(receivedMessage);
+            return JsonHandler.toJson(checkMessageStatus(receivedMessage));
         } catch(JMSException e){
             LOGGER.error("error destroying queue {}: {}", name, e.toString());
-            System.out.println(ResultJSON.writeErrorJson(500,
-                String.format("error destroying queue %s: %s", name, e.toString())));
+            return ResultJSON.writeErrorJson(500,
+                String.format("error destroying queue %s: %s", name, e.toString()));
         }
     }
 
@@ -248,7 +266,7 @@ public class CowBrow
         return jsonObject;
     }
 
-    public void listMessages(Session session, String queueName) {
+    public String listMessages(Session session, String queueName) {
         try {
             Queue queue = session.createQueue(queueName);
             QueueBrowser browser = session.createBrowser(queue);
@@ -263,22 +281,27 @@ public class CowBrow
                 MessageJSON response = messageToJson(message);
                 result.addResponse(response);
             }
-            System.out.println(JsonHandler.toJson(result));
+            return JsonHandler.toJson(result);
         } catch(JMSException e) {
             LOGGER.error("error listing messages {}", e.toString());
-            System.out.println(ResultJSON.writeErrorJson(500,
-                String.format("error listing messages %s", e.toString())));
+            return ResultJSON.writeErrorJson(500,
+                String.format("error listing messages %s", e.toString()));
         }
     }
 
-    private boolean checkMessageStatus(Message message) throws JMSException {
+    private ResultJSON<StatusJson> checkMessageStatus(Message message) throws JMSException {
         int status = message.getIntProperty("JMQStatus");
+        ResultJSON<StatusJson> result = new ResultJSON<>();
+        result.withResponseCode(status)
+            .withResponseType(ResultJSON.TYPE_STATUS);
         if(status != 200) {
             String errorMsg = message.getStringProperty("JMQErrorString");
+            result.addResponse(new StatusJson().withMessage(errorMsg));
             LOGGER.error("got error: {}", errorMsg);
-            return false;
+        } else {
+            result.addResponse(StatusJson.genericOk());
         }
-        return true;
+        return result;
     }
 
     public CmdProperty makeProperty(String key, Object value) {

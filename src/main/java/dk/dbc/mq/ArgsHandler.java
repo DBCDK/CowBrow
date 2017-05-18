@@ -38,20 +38,22 @@ public class ArgsHandler {
         String action = actions.get(0);
         CowBrow.CmdProperty[] properties = handleProperties(
             args.getList("prop"), context);
+        String response = "";
         if(Arrays.stream(actionList).noneMatch(action::equals)) {
             LOGGER.warn("action {} not recognized", action);
         } else if(action.equals("list")) {
-            context.listQueues(session);
+            response = context.listQueues(session);
         } else if(action.equals("create")) {
-            context.createQueue(session, args.getString("queuename"));
+            response = context.createQueue(session, args.getString("queuename"));
         } else if(action.equals("destroy")) {
-            context.destroyQueue(session, args.getString("queuename"));
+            response = context.destroyQueue(session, args.getString("queuename"));
         } else if(action.equals("sendtext")) {
-            context.sendTextMessageTo(session, args.getString("queuename"),
+            response = context.sendTextMessageTo(session, args.getString("queuename"),
                 actions.get(1), properties);
         } else if(action.equals("listmessages")) {
-            context.listMessages(session, args.getString("queuename"));
+            response = context.listMessages(session, args.getString("queuename"));
         }
+        System.out.println(response);
     }
 
     private static CowBrow.CmdProperty[] handleProperties(List<ArrayList<String>> propertyValuesList, CowBrow context) {

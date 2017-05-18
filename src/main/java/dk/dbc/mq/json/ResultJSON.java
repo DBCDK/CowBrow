@@ -11,6 +11,7 @@ public class ResultJSON<T> {
     public static String TYPE_MESSAGES = "messages";
     public static String TYPE_DESTINATIONS = "destinations";
     public static String TYPE_ERROR = "error";
+    public static String TYPE_STATUS = "status";
 
     public ResultJSON() {
         responses = new ArrayList<>();
