@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dk.dbc.mq</groupId>
     <artifactId>CowBrow</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <version>0.1.0</version>
     <build>
         <plugins>
@@ -63,6 +63,48 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>fish.payara.extras</groupId>
+                        <artifactId>payara-micro</artifactId>
+                        <version>4.1.1.162</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>payara-uber-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>fish.payara.micro.PayaraMicro</mainClass>
+                            <arguments>
+                                <argument>--deploy</argument>
+                                <argument>${basedir}/target/${project.build.finalName}.war</argument>
+                                <argument>--outputUberJar</argument>
+                                <argument>${basedir}/target/${project.build.finalName}.jar</argument>
+                                <argument>--noCluster</argument>
+                                <argument>--logo</argument>
+                                <argument>--minHttpThreads</argument>
+                                <argument>100</argument>
+                                <argument>--maxHttpThreads</argument>
+                                <argument>200</argument>
+                            </arguments>
+                            <includeProjectDependencies>false</includeProjectDependencies>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <executableDependency>
+                                <groupId>fish.payara.extras</groupId>
+                                <artifactId>payara-micro</artifactId>
+                            </executableDependency>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
