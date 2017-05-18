@@ -39,6 +39,10 @@ public class CowBrow
     private static int CREATE_DESTINATION = 10;
     private static int DESTROY_DESTINATION = 12;
 
+    public static final String DEFAULT_PORT = "7676";
+    public static final String DEFAULT_USER = "admin";
+    public static final String DEFAULT_PASSWORD = "admin";
+
     private Connection connection;
 
     public Session connect(String host, String port, String user,
@@ -308,7 +312,7 @@ public class CowBrow
         return new CmdProperty(key, value);
     }
 
-    protected class CmdProperty {
+    public class CmdProperty {
         private String key;
         private Object value;
         public CmdProperty(String key, Object value) {
