@@ -88,7 +88,7 @@
                                 <argument>--deploy</argument>
                                 <argument>${basedir}/target/${project.build.finalName}.war</argument>
                                 <argument>--outputUberJar</argument>
-                                <argument>${basedir}/target/${project.build.finalName}.jar</argument>
+                                <argument>${basedir}/target/${project.build.finalName}-payaramicro.jar</argument>
                                 <argument>--noCluster</argument>
                                 <argument>--logo</argument>
                                 <argument>--minHttpThreads</argument>
