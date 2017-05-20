@@ -3,7 +3,7 @@ package dk.dbc.mq.ejb;
 import dk.dbc.mq.CowBrow;
 import dk.dbc.mq.json.ResultJSON;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -15,7 +15,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@ApplicationScoped
+@RequestScoped
 @Path("/")
 public class RestBean {
     public static final String QUERY_LOGIN = "login";
