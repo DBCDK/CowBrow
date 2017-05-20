@@ -1,6 +1,7 @@
 package dk.dbc.mq.ejb;
 
 import dk.dbc.mq.CowBrow;
+import dk.dbc.mq.interceptors.ContextValidator;
 import dk.dbc.mq.json.JsonHandler;
 import dk.dbc.mq.json.ResultJSON;
 
@@ -20,22 +21,27 @@ public class ContextBean implements Serializable {
         return session != null;
     }
 
+    @ContextValidator
     public String getQueues() {
         return context.listQueues(session);
     }
 
+    @ContextValidator
     public String getMessages(String queue) {
         return context.listMessages(session, queue);
     }
 
+    @ContextValidator
     public String createQueue(String queue) {
         return context.createQueue(session, queue);
     }
 
+    @ContextValidator
     public String destroyQueue(String queue) {
         return context.destroyQueue(session, queue);
     }
 
+    @ContextValidator
     public String sendText(String queue, String text, String propertiesJson) {
         try {
             CowBrow.CmdProperty[] properties = JsonHandler.handleProperties(
@@ -44,5 +50,13 @@ public class ContextBean implements Serializable {
         } catch(IOException e) {
             return ResultJSON.writeErrorJson(500, e.toString());
         }
+    }
+
+    public CowBrow getContext() {
+        return context;
+    }
+
+    public Session getSession() {
+        return session;
     }
 }
