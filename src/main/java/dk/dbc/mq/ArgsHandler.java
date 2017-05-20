@@ -52,7 +52,7 @@ public class ArgsHandler {
                 actions.get(1), properties);
         } else if(action.equals("listmessages")) {
             response = context.listMessages(session, args.getString("queuename"),
-                args.getInt("payload_cutoff"));
+                args.getInt("payload_cutoff"), args.getInt("messages_to_show"));
         }
         System.out.println(response);
     }
@@ -72,6 +72,7 @@ public class ArgsHandler {
         parser.addArgument("-p", "--port").setDefault("7676");
         parser.addArgument("-q", "--queuename");
         parser.addArgument("--payload-cutoff").type(Integer.class).setDefault(-1);
+        parser.addArgument("--messages-to-show").type(Integer.class).setDefault(-1);
         parser.addArgument("--prop")
             .nargs(2)
             .action(new AppendArgumentAction())

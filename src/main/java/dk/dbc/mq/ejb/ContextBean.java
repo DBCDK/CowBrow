@@ -27,8 +27,8 @@ public class ContextBean implements Serializable {
     }
 
     @ContextValidator
-    public String getMessages(String queue, int payloadCutoff) {
-        return context.listMessages(session, queue, payloadCutoff);
+    public String getMessages(String queue, int payloadCutoff, int messagesToShow) {
+        return context.listMessages(session, queue, payloadCutoff, messagesToShow);
     }
 
     @ContextValidator

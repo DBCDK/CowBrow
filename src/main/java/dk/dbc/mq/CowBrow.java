@@ -43,6 +43,7 @@ public class CowBrow
     public static final String DEFAULT_USER = "admin";
     public static final String DEFAULT_PASSWORD = "admin";
     public static final String DEFAULT_PAYLOAD_CUTOFF = "-1";
+    public static final String DEFAULT_MESSAGES_TO_SHOW = "-1";
 
     private Connection connection;
 
@@ -271,7 +272,8 @@ public class CowBrow
         return jsonObject;
     }
 
-    public String listMessages(Session session, String queueName, int payloadCutoff) {
+    public String listMessages(Session session, String queueName, int payloadCutoff,
+            int messagesToShow) {
         try {
             Queue queue = session.createQueue(queueName);
             QueueBrowser browser = session.createBrowser(queue);
@@ -280,8 +282,11 @@ public class CowBrow
             result.withResponseType(ResultJSON.TYPE_MESSAGES)
                 .withResponseCode(200);
 
+            int messagesShown = 0;
             Enumeration messages = browser.getEnumeration();
             while(messages.hasMoreElements()) {
+                if(messagesToShow >= 0 && messagesShown++ >= messagesToShow)
+                    break;
                 Message message = (Message) messages.nextElement();
                 MessageJSON response = messageToJson(message);
                 if(payloadCutoff >= 0 && response.payload instanceof String) {
