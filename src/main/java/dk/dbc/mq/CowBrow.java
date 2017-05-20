@@ -42,6 +42,7 @@ public class CowBrow
     public static final String DEFAULT_PORT = "7676";
     public static final String DEFAULT_USER = "admin";
     public static final String DEFAULT_PASSWORD = "admin";
+    public static final String DEFAULT_PAYLOAD_CUTOFF = "-1";
 
     private Connection connection;
 
@@ -270,7 +271,7 @@ public class CowBrow
         return jsonObject;
     }
 
-    public String listMessages(Session session, String queueName) {
+    public String listMessages(Session session, String queueName, int payloadCutoff) {
         try {
             Queue queue = session.createQueue(queueName);
             QueueBrowser browser = session.createBrowser(queue);
@@ -283,6 +284,14 @@ public class CowBrow
             while(messages.hasMoreElements()) {
                 Message message = (Message) messages.nextElement();
                 MessageJSON response = messageToJson(message);
+                if(payloadCutoff >= 0 && response.payload instanceof String) {
+                    String payload = "";
+                    if(payloadCutoff > 0) {
+                        payload = ((String) response.payload).substring(0,
+                            payloadCutoff) + " [...]";
+                    }
+                    response.withPayload(payload);
+                }
                 result.addResponse(response);
             }
             return JsonHandler.toJson(result);

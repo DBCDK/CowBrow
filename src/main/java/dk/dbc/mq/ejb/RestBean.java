@@ -31,6 +31,7 @@ public class RestBean {
     public static final String QUERYPARAM_PASSWORD = "password";
     public static final String QUERYPARAM_QUEUE = "queue";
     public static final String QUERYPARAM_TEXT = "text";
+    public static final String QUERYPARAM_MESSAGE_PAYLOAD_CUTOFF = "payloadcutoff";
 
     @Inject
     ContextBean context;
@@ -59,8 +60,10 @@ public class RestBean {
     @GET
     @Path(QUERY_GET_MESSAGES)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMessages(@QueryParam(QUERYPARAM_QUEUE) String queue) {
-        String response = context.getMessages(queue);
+    public Response getMessages(@QueryParam(QUERYPARAM_QUEUE) String queue,
+            @DefaultValue(CowBrow.DEFAULT_PAYLOAD_CUTOFF) @QueryParam(
+                QUERYPARAM_MESSAGE_PAYLOAD_CUTOFF) int payloadCutoff) {
+        String response = context.getMessages(queue, payloadCutoff);
         return Response.ok().entity(response).build();
     }
 

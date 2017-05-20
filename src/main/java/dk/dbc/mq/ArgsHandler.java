@@ -51,7 +51,8 @@ public class ArgsHandler {
             response = context.sendTextMessageTo(session, args.getString("queuename"),
                 actions.get(1), properties);
         } else if(action.equals("listmessages")) {
-            response = context.listMessages(session, args.getString("queuename"));
+            response = context.listMessages(session, args.getString("queuename"),
+                args.getInt("payload_cutoff"));
         }
         System.out.println(response);
     }
@@ -70,6 +71,7 @@ public class ArgsHandler {
         parser.addArgument("-H", "--host").setDefault("");
         parser.addArgument("-p", "--port").setDefault("7676");
         parser.addArgument("-q", "--queuename");
+        parser.addArgument("--payload-cutoff").type(Integer.class).setDefault(-1);
         parser.addArgument("--prop")
             .nargs(2)
             .action(new AppendArgumentAction())
