@@ -291,9 +291,11 @@ public class CowBrow
                 MessageJSON response = messageToJson(message);
                 if(payloadCutoff >= 0 && response.payload instanceof String) {
                     String payload = "";
+                    int plc=((String) response.payload).length();
+                    plc=plc>payloadCutoff?payloadCutoff:plc;
                     if(payloadCutoff > 0) {
                         payload = ((String) response.payload).substring(0,
-                            payloadCutoff) + " [...]";
+                            plc) + " [...]";
                     }
                     response.withPayload(payload);
                 }
