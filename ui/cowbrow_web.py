@@ -123,11 +123,8 @@ def view_message( queuename, messageid ):
 
         # Massage message to enable easy rendering
         message["arranged_headers"] = split_map_in_two_columns(table_of_maps=message['headers'])
-        print('one')
-
         message["arranged_properties"] = split_map_in_two_columns(flatify(message['properties']))
 
-        print('two')
 
         # Look for base64 encoded content, and give a go of decoding. Not always succesful, utf-8 problems.
         try:
