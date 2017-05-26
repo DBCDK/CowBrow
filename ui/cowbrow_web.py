@@ -3,7 +3,9 @@ from flask import Flask, render_template, session, request
 from mq_python.mq_rest_module import mq_rest_module
 from utils.ad_hoc_decode import ad_hoc_base64_decode_content
 import os
-import json
+import random
+import string
+
 #
 # FLASK and defaulting stuff
 app = Flask(__name__)
@@ -151,8 +153,10 @@ def view_message( queuename, messageid ):
 
 
 if __name__ == "__main__":
-    app.secret_key='gloykfegHod6'
-    if 'SSL' in app.config and app.config['SSL']=='yes':
+
+    app.secret_key= ''.join(random.choice(string.ascii_letters) for i in range(32))
+    print(app.secret_key)
+    if 'SSL' in os.environ and os.environ['SSL']=='yes':
         context = ('server.crt', 'server.key')
         app.run(port=5000, host='0.0.0.0', ssl_context=context, threaded=True)
     else:
