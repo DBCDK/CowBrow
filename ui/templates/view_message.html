@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block body %}
+
+
+    <h2>Headers</h2>
+    <table>
+    {% for header_line in message['arranged_headers'] %}
+        <tr  class="table-thinline">
+            {% for header in header_line %}
+                {% for k,v in header.items() %}
+            <td class="table-thinline"><b>{{ k }}:</b>&nbsp;{{ v }}</td>
+                {% endfor %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
+    <h2><br/>Properties</h2>
+    <table>
+    {% for prop_line in message['arranged_properties'] %}
+        <tr  class="table-thinline">
+            {% for property in prop_line %}
+                {% for k,v in property.items() %}
+            <td class="table-thinline"><b>{{ k }}:&nbsp;</b>{{ v }}</td>
+                {% endfor %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
+    <h2><br/>Payload</h2>
+    <div class="scroll-win2">
+        {{ message['base64_decoded_content'] }}
+    </div>
+
+{% endblock %}
