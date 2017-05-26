@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 @Path("/")
 public class RestBean {
     public static final String QUERY_LOGIN = "login";
+    public static final String QUERY_LOGOUT = "logout";
     public static final String QUERY_GET_DESTIONATIONS = "destinations";
     public static final String QUERY_GET_MESSAGES = "messages";
     public static final String QUERY_CREATE_QUEUE = "create";
@@ -50,6 +51,15 @@ public class RestBean {
         return Response.ok().build();
     }
 
+
+    @GET
+    @Path(QUERY_LOGOUT)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response logOut() {
+        String response = context.logOut();
+        return Response.ok().entity(response).build();
+    }
+
     @GET
     @Path(QUERY_GET_DESTIONATIONS)
     @Produces(MediaType.APPLICATION_JSON)
@@ -57,6 +67,7 @@ public class RestBean {
         String response = context.getQueues();
         return Response.ok().entity(response).build();
     }
+
 
     @GET
     @Path(QUERY_GET_MESSAGES)
