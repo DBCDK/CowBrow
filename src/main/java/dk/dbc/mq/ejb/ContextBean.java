@@ -22,6 +22,11 @@ public class ContextBean implements Serializable {
     }
 
     @ContextValidator
+    public String logOut() {
+        return context.disconnect();
+    }
+
+    @ContextValidator
     public String getQueues() {
         return context.listQueues(session);
     }
