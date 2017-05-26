@@ -5,9 +5,7 @@ MAINTAINER cluster
 ARG artifact_name=CowBrow-0.1.0-payaramicro.jar
 ARG Cowbrow_jar_artifact=target/${artifact_name}
 
-#ENV CB_JAR ${Cowbrow_jar_artifact}
 ENV CBW_CONF "https://git.dbc.dk/config/dataio/raw/master/cowbrowweb_conf.json"
-#ENV CBW_NAME ${artifact_name}
 
 ENV SSL no
 
