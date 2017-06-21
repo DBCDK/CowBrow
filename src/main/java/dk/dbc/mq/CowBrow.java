@@ -43,6 +43,7 @@ public class CowBrow
     private static int DESTROY_DESTINATION = 12;
     private static int PAUSE_DESTINATION = 30;
     private static int RESUME_DESTINATION = 36;
+    private static int PURGE_DESTINATION = 32;
 
     public static final String DEFAULT_PORT = "7676";
     public static final String DEFAULT_USER = "admin";
@@ -272,6 +273,22 @@ public class CowBrow
             LOGGER.error("error pausing queue {}: {}", name, e.toString());
             return ResultJSON.writeErrorJson(500,
                 String.format("error pausing queue %s: %s", name, e.toString()));
+        }
+    }
+
+    public String purgeQueue(Session session, String name) {
+        try {
+            CmdProperty[] properties = {
+                new CmdProperty(JMQMESSAGETYPE, PURGE_DESTINATION),
+                new CmdProperty(JMQDESTINATION, name),
+                new CmdProperty(JMQDESTTYPE, DestType.DEST_TYPE_QUEUE),
+            };
+            Message receivedMessage = sendBrokerCmd(session, null, properties);
+            return JsonHandler.toJson(checkMessageStatus(receivedMessage));
+        } catch(JMSException e) {
+            LOGGER.error("error purging queue {}: {}", name, e.toString());
+            return ResultJSON.writeErrorJson(500,
+                String.format("error purging queue %s: %s", name, e.toString()));
         }
     }
 
