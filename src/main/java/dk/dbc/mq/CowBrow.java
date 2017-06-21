@@ -35,9 +35,13 @@ public class CowBrow
     // magiske værdier fundet i com.sun.messaging.jmq.util.admin.MessageType
     private static String JMQADMINDEST = "__JMQAdmin";
     private static String JMQMESSAGETYPE = "JMQMessageType";
+    private static String JMQDESTINATION = "JMQDestination";
+    private static String JMQDESTTYPE = "JMQDestType";
+    private static String JMQPAUSETARGET = "JMQPauseTarget";
     private static int GET_DESTINATIONS = 20;
     private static int CREATE_DESTINATION = 10;
     private static int DESTROY_DESTINATION = 12;
+    private static int PAUSE_DESTINATION = 30;
 
     public static final String DEFAULT_PORT = "7676";
     public static final String DEFAULT_USER = "admin";
@@ -222,8 +226,8 @@ public class CowBrow
         try {
             CmdProperty[] properties = {
                 new CmdProperty(JMQMESSAGETYPE, DESTROY_DESTINATION),
-                new CmdProperty("JMQDestination", name),
-                new CmdProperty("JMQDestType", DestType.DEST_TYPE_QUEUE),
+                new CmdProperty(JMQDESTINATION, name),
+                new CmdProperty(JMQDESTTYPE, DestType.DEST_TYPE_QUEUE),
             };
             Message receivedMessage = sendBrokerCmd(session, null, properties);
             return JsonHandler.toJson(checkMessageStatus(receivedMessage));
@@ -231,6 +235,23 @@ public class CowBrow
             LOGGER.error("error destroying queue {}: {}", name, e.toString());
             return ResultJSON.writeErrorJson(500,
                 String.format("error destroying queue %s: %s", name, e.toString()));
+        }
+    }
+
+    public String pauseQueue(Session session, String name) {
+        try {
+            CmdProperty[] properties = {
+                new CmdProperty(JMQMESSAGETYPE, PAUSE_DESTINATION),
+                new CmdProperty(JMQPAUSETARGET, JMQDESTINATION),
+                new CmdProperty(JMQDESTINATION, name),
+                new CmdProperty(JMQDESTTYPE, DestType.DEST_TYPE_QUEUE),
+            };
+            Message receivedMessage = sendBrokerCmd(session, null, properties);
+            return JsonHandler.toJson(checkMessageStatus(receivedMessage));
+        } catch(JMSException e) {
+            LOGGER.error("error pausing queue {}: {}", name, e.toString());
+            return ResultJSON.writeErrorJson(500,
+                String.format("error pausing queue %s: %s", name, e.toString()));
         }
     }
 

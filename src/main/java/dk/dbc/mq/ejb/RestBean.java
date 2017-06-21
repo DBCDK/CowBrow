@@ -25,6 +25,7 @@ public class RestBean {
     public static final String QUERY_CREATE_QUEUE = "create";
     public static final String QUERY_DESTROY_QUEUE = "destroy";
     public static final String QUERY_SEND_TEXT = "sendtext";
+    public static final String QUERY_PAUSE_QUEUE = "pause";
 
     public static final String QUERYPARAM_HOST = "host";
     public static final String QUERYPARAM_PORT = "port";
@@ -104,6 +105,14 @@ public class RestBean {
     public Response sendText(@QueryParam(QUERYPARAM_QUEUE) String queue,
            @QueryParam(QUERYPARAM_TEXT) String text, String propertiesJson) {
         String response = context.sendText(queue, text, propertiesJson);
+        return Response.ok().entity(response).build();
+    }
+
+    @GET
+    @Path(QUERY_PAUSE_QUEUE)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response pauseQueue(@QueryParam(QUERYPARAM_QUEUE) String queue) {
+        String response = context.pauseQueue(queue);
         return Response.ok().entity(response).build();
     }
 }
