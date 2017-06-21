@@ -1,0 +1,24 @@
+<!doctype html>
+<title>OpenMQ browser</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+<div class=page>
+    <footer class="footer-thin">
+        <div align="left">
+            <table width="100%">
+                <tr>
+
+                    <td align="left"><small><a href="javascript:window.history.back()">{{ whereami }}</a></small></td>
+                </tr>
+            </table>
+        </div>
+    </footer>
+
+
+    <h1>MQ Browser</h1>
+
+    {% block body %}{% endblock %}
+
+
+
+</div>
+

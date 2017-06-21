@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+<table class="main-table">
+    {% for server,details in servers.items() %}
+    <tr>
+        <td><a href="/server/{{ server }}">{{ server }}</a> </td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td><a href="/other_server">Other server</a> </td>
+    </tr>
+
+</table>
+
+{% endblock %}
