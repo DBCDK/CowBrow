@@ -42,6 +42,7 @@ public class CowBrow
     private static int CREATE_DESTINATION = 10;
     private static int DESTROY_DESTINATION = 12;
     private static int PAUSE_DESTINATION = 30;
+    private static int RESUME_DESTINATION = 36;
 
     public static final String DEFAULT_PORT = "7676";
     public static final String DEFAULT_USER = "admin";
@@ -50,6 +51,8 @@ public class CowBrow
     public static final String DEFAULT_MESSAGES_TO_SHOW = "-1";
 
     private Connection connection;
+
+    private enum QueueStateChange { PAUSE, RESUME };
 
     public Session connect(String host, String port, String user,
             String password) {
@@ -239,9 +242,26 @@ public class CowBrow
     }
 
     public String pauseQueue(Session session, String name) {
+        return sendPauseResumeMessage(session, name, QueueStateChange.PAUSE);
+    }
+
+    public String resumeQueue(Session session, String name) {
+        return sendPauseResumeMessage(session, name, QueueStateChange.RESUME);
+    }
+
+    private String sendPauseResumeMessage(Session session, String name, QueueStateChange change) {
+        int stateProperty = -1;
+        if(change == QueueStateChange.PAUSE) {
+            stateProperty = PAUSE_DESTINATION;
+        } else if(change == QueueStateChange.RESUME) {
+            stateProperty = RESUME_DESTINATION;
+        } else {
+            return ResultJSON.writeErrorJson(500,
+                String.format("state change request not understood: %s", change));
+        }
         try {
             CmdProperty[] properties = {
-                new CmdProperty(JMQMESSAGETYPE, PAUSE_DESTINATION),
+                new CmdProperty(JMQMESSAGETYPE, stateProperty),
                 new CmdProperty(JMQPAUSETARGET, JMQDESTINATION),
                 new CmdProperty(JMQDESTINATION, name),
                 new CmdProperty(JMQDESTTYPE, DestType.DEST_TYPE_QUEUE),

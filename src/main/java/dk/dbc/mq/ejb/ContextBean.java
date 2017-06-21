@@ -62,6 +62,11 @@ public class ContextBean implements Serializable {
         return context.pauseQueue(session, queue);
     }
 
+    @ContextValidator
+    public String resumeQueue(String queue) {
+        return context.resumeQueue(session, queue);
+    }
+
     public CowBrow getContext() {
         return context;
     }

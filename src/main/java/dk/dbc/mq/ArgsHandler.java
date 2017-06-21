@@ -20,7 +20,7 @@ public class ArgsHandler {
     private static Logger LOGGER = LoggerFactory.getLogger(ArgsHandler.class);
 
     private static String[] actionList = {"list", "create", "destroy",
-        "sendtext", "listmessages", "pause"};
+        "sendtext", "listmessages", "pause", "resume"};
     private static String availableActions = Stream.of(actionList).collect(
         Collectors.joining(", "));
 
@@ -55,6 +55,8 @@ public class ArgsHandler {
                 args.getInt("payload_cutoff"), args.getInt("messages_to_show"));
         } else if(action.equals("pause")) {
             response = context.pauseQueue(session, args.getString("queuename"));
+        } else if(action.equals("resume")) {
+            response = context.resumeQueue(session, args.getString("queuename"));
         }
         System.out.println(response);
     }
