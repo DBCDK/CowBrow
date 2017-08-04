@@ -40,6 +40,15 @@ class mq_rest_module:
 
         return cookies.get_dict()['JSESSIONID']
 
+    def get_num_messages(self, queuename, session_id):
+        print('Getting queue depth for queue:'+queuename)
+        js = self.get_queues(sessionid=session_id)
+
+        for queue in js['responses']:
+            if queue['name']==queuename:
+                return queue['numMessages']
+
+        return -1
 
     def get_messages_from_queue(self, queuename, start_index, end_index, session_id):
         if not int(start_index)==0:

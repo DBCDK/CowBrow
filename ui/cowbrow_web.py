@@ -84,11 +84,16 @@ def view_queue(servername, queuename, startindex, endindex):
                                                  end_index=endindex,
                                                  session_id=session['JSESSIONID']
                                                  )
+        total_num_messages=mq_rest.get_num_messages( queuename=queuename,
+                                                     session_id=session['JSESSIONID']
+                                                     )
         return render_template( 'list_messages.html',
                                 messages=messages,
                                 servername=servername,
                                 queue=queuename,
-                                whereami='servers /'+session['server_id']+' / '+queuename+' (0-'+str(len(messages['responses']))+')'  )
+                                whereami='servers /'+session['server_id']+' / '+queuename+' (0-'+str(len(messages['responses']))+')',
+                                total_num_messages=total_num_messages
+                                )
     except Exception as e:
         print("Exception when fetching queue content for queue:"+servername+"/"+queuename)
         return render_template('error.html', err_msg=str(e))
