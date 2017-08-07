@@ -94,3 +94,5 @@ class mq_rest_module:
 
         return None
 
+if __name__ == "__main__":
+    print('Mqrest initialized')
