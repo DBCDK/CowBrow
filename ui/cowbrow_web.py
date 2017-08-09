@@ -1,6 +1,6 @@
 import requests
 from flask import Flask, render_template, session, request
-from mq_python.mq_rest_module import mq_rest_module
+from mq_python.mqrestmodule import MQRestModule
 from utils.ad_hoc_decode import ad_hoc_base64_decode_content
 import os
 import random
@@ -17,7 +17,7 @@ app.config.update(dict(
 ))
 
 
-mq_rest=mq_rest_module(mq_rest_endpoint=app.config['mq_rest_gateway'])
+mq_rest=MQRestModule(mq_rest_endpoint=app.config['mq_rest_gateway'])
 
 @app.route('/')
 def landing_page():
