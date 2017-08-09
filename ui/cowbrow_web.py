@@ -1,6 +1,6 @@
 import requests
 from flask import Flask, render_template, session, request
-from mq_python.mq_rest_module import mq_rest_module
+from mq_python.mqrestmodule import MQRestModule
 from utils.ad_hoc_decode import ad_hoc_base64_decode_content
 import os
 import random
@@ -17,7 +17,7 @@ app.config.update(dict(
 ))
 
 
-mq_rest=mq_rest_module(mq_rest_endpoint=app.config['mq_rest_gateway'])
+mq_rest=MQRestModule(mq_rest_endpoint=app.config['mq_rest_gateway'])
 
 @app.route('/')
 def landing_page():
@@ -84,11 +84,16 @@ def view_queue(servername, queuename, startindex, endindex):
                                                  end_index=endindex,
                                                  session_id=session['JSESSIONID']
                                                  )
+        total_num_messages=mq_rest.get_num_messages( queuename=queuename,
+                                                     session_id=session['JSESSIONID']
+                                                     )
         return render_template( 'list_messages.html',
                                 messages=messages,
                                 servername=servername,
                                 queue=queuename,
-                                whereami='servers /'+session['server_id']+' / '+queuename+' (0-'+str(len(messages['responses']))+')'  )
+                                whereami='servers /'+session['server_id']+' / '+queuename+' (0-'+str(len(messages['responses']))+')',
+                                total_num_messages=total_num_messages
+                                )
     except Exception as e:
         print("Exception when fetching queue content for queue:"+servername+"/"+queuename)
         return render_template('error.html', err_msg=str(e))
