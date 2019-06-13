@@ -15,8 +15,8 @@ node('itwn-002') {
 
     stage 'push'
         docker.withRegistry('https://docker.dbc.dk', 'docker') {
-            //app.push
-            app.push 'latest'
+            app.push
+            //app.push 'latest'
         }
 
 }
