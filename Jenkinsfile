@@ -11,7 +11,7 @@ node('itwn-002') {
 
     stage 'build'
     def tag = 'cowbrow_web'
-    app = docker.build("$tag:${env.BUILD_NUMBER}", '--pull --no-cache .')
+    app = docker.build("$tag:${env.BRANCH_NAME}-${env.BUILD_NUMBER}", '--pull --no-cache .')
 
     stage 'push'
         docker.withRegistry('https://docker.dbc.dk', 'docker') {
