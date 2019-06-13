@@ -7,16 +7,18 @@ node('itwn-002') {
 
     mvnHome="/home/isworker/current/tools/hudson.tasks.Maven_MavenInstallation/Maven_3"
     
-    stage('Build-jar') {
-        steps {
-            sh "${mvnHome}/bin/mvn package"
+    stages {
+        stage('Build-jar') {
+            steps {
+                sh "${mvnHome}/bin/mvn package"
+            }
         }
-    }
 
-    stage('build') {
-        steps {
-            def image = docker.build("docker.dbc.dk/cowbrow_web:${env.BRANCH_NAME}-${env.BUILD_NUMBER}")
-            image.push()
+        stage('build') {
+            steps {
+                def image = docker.build("docker.dbc.dk/cowbrow_web:${env.BRANCH_NAME}-${env.BUILD_NUMBER}")
+                image.push()
+            }
         }
     }
 }
