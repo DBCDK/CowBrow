@@ -16,6 +16,8 @@ RUN mkdir -p /data/cowbrowweb && \
     apt-get install wget jdk8-dbc openssl -qy && \
     pip install requests Flask
 
+RUN apt-get update && apt-get install -y procps
+
 ADD ${Cowbrow_jar_artifact} /data/cowbrowweb/
 ADD ui/*.py /data/cowbrowweb/
 ADD ui/mq_python/* /data/cowbrowweb/mq_python/
