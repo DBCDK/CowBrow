@@ -5,17 +5,15 @@ from utils.ad_hoc_decode import ad_hoc_base64_decode_content
 import os
 import random
 import string
+import json
 
 #
 # FLASK and defaulting stuff
 app = Flask(__name__)
 app.config.from_object(__name__) # load config from this file , flaskr.py
 
-print(os.environ.get('CBW_CONF'))
-app.config.update(dict(
-    requests.get( url=os.environ.get('CBW_CONF') ).json()
-))
-
+print(os.environ.get('COWBROW_CONFIG_JSON'))
+app.config.update(json.loads(os.environ.get('COWBROW_CONFIG_JSON')))
 
 mq_rest=MQRestModule(mq_rest_endpoint=app.config['mq_rest_gateway'])
 
